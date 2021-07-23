@@ -12,12 +12,10 @@
             <a href="" class="mainBtn sendMailBtn" data-toggle="modal" data-target="#modalSendMail">Написать письмо</a>
         </div>
 
-        <div>
-            <label class="searchL"><input type="text" name="search" class="search"></label>
-        </div>
         <div class="content__main">
             @if (! empty($inbox))
                 @include('mailsInFolder')
+                @include('mailBody')
             @endif
             <?php imap_close($imap_conn);?>
         </div>

@@ -41,14 +41,12 @@ class MainController extends Controller
     public function changeFolder(Request $request)
     {
         Session::forget('success');
-        //Connect to Folder        
         if($request->folder == 'sent')
             $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';
         if($request->folder == 'inbox')
             $folder = 'INBOX';
-        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
 
-        // SET filter criteria
+        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
         $inbox = imap_search($imap_conn, 'ALL');
 
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'folder'));      
@@ -64,13 +62,11 @@ class MainController extends Controller
         }   
 
         $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass)
-            or die("Не удалось подключиться: " . imap_last_error());            
-        
+            or die("Не удалось подключиться: " . imap_last_error());
         foreach($request->idList as $id){
             imap_delete($imap_conn, $id, FT_UID);
             imap_expunge($imap_conn);
-        }
-                
+        }                
         $inbox = imap_search($imap_conn, 'ALL');        
 
         if(count($request->idList)>1)
@@ -80,6 +76,36 @@ class MainController extends Controller
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'folder'));
     }
 
+    public function showMail(Request $request){
+        if($request->activeFolder == 'sent')
+            $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';                   
+        if($request->activeFolder == 'inbox')
+            $folder = 'INBOX';
+
+        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass)
+            or die("Не удалось подключиться: " . imap_last_error());
+        
+        $inbox = imap_fetch_overview($imap_conn, $request->msgno);
+        $html = imap_qprint(imap_body($imap_conn, $request->msgno, 2));
+
+        $structure = imap_fetchstructure($imap_conn, $request->msgno);
+        if(isset($structure->parts) && is_array($structure->parts) && isset($structure->parts[1])) {
+            $part = $structure->parts[1];
+            $message = imap_fetchbody($imap_conn,$request->msgno,2);
+
+            if($part->encoding == 3) {
+                $message = imap_base64($message);
+            } else if($part->encoding == 1) {
+                $message = imap_8bit($message);
+            } else {
+                $message = imap_qprint($message);
+            }            
+        }
+        else{
+            $message = imap_qprint(imap_body($imap_conn, $request->msgno, 2));
+        }
+        return view('mailBody', compact('message', 'inbox'));
+    }
     public function sendmail(Request $request)
     {
         if($request->email){

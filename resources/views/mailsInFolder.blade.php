@@ -1,6 +1,9 @@
 <div class="mailsInFolder">
     @include('layouts.messages')
-    @if (! empty($inbox))                
+    @if (! empty($inbox))
+        <div>
+            <label class="searchL"><input type="text" name="search" class="search"></label>
+        </div>
         <table class="table table-striped">            
             @foreach($inbox as $email)
                 <?php
@@ -13,16 +16,16 @@
                     <td>
                         <input style="width: 40px; height: 20px;" class="checkit" name="checkit" type="checkbox" data-id={{$overview[0]->uid}}>
                     </td>
-                    <td>
+                    <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
                         <?php 
                             if ($folder == 'INBOX') echo $overview[0]->from;
                             else echo 'Кому: '.$overview[0]->to; 
                         ?>
                     </td>
-                    <td>
+                    <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
                         <?php if($overview[0]->subject) echo $overview[0]->subject; ?> - <?php echo $message; ?>
                     </td>
-                    <td><?php echo $date; ?></td>
+                    <td class="openMail" data-msgno="{{$overview[0]->msgno}}"><?php echo $date; ?></td>
                 </tr>
             @endforeach
         </table>

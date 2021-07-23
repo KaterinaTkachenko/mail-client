@@ -37460,7 +37460,7 @@ $(document).ready(function () {
       $('.content__header').css('justify-content', 'flex-end');
       $('.deleteItems').css('display', 'none');
       $('.content').css('display', 'block');
-      $('.table').html(response.data);
+      $('.mailsInFolder').html(response.data);
       setTimeout(function () {
         $('.alert').alert('close');
       }, 3000);
@@ -37491,6 +37491,25 @@ $(document).ready(function () {
       } finally {
         _iterator.f();
       }
+    }
+
+    if (e.target.classList.contains("openMail")) {
+      $('.spinner').css('display', 'flex');
+      $('.content').css('display', 'none');
+      var activeFolder = $('#sidebar li.active').children().attr('data-folder');
+      var msgno = e.target.getAttribute('data-msgno');
+      axios({
+        method: "post",
+        url: "/showMail",
+        data: {
+          msgno: msgno,
+          activeFolder: activeFolder
+        }
+      }).then(function (response) {
+        $('.spinner').css('display', 'none');
+        $('.content').css('display', 'block');
+        $('.mailsInFolder').html(response.data);
+      });
     }
   });
   $('.deleteItems').click(function (e) {
@@ -37532,7 +37551,6 @@ $(document).ready(function () {
         $('.alert').alert('close');
       }, 3000);
     });
-    ;
   });
 });
 

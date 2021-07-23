@@ -57,7 +57,7 @@ $(document).ready(function(){
             $('.content__header').css('justify-content', 'flex-end')
             $('.deleteItems').css('display', 'none');           
             $('.content').css('display', 'block');
-            $('.table').html(response.data);
+            $('.mailsInFolder').html(response.data);
             setTimeout(function() {$('.alert').alert('close')}, 3000);
         });
     });   
@@ -77,6 +77,22 @@ $(document).ready(function(){
                     $('.deleteItems').css('display', 'none');
                 }
             }
+        }
+        if (e.target.classList.contains("openMail")){
+            $('.spinner').css('display', 'flex');
+            $('.content').css('display', 'none');
+            
+            let activeFolder = $('#sidebar li.active').children().attr('data-folder');
+            let msgno = e.target.getAttribute('data-msgno');
+            axios({
+                method: "post",
+                url: "/showMail",
+                data: {msgno: msgno, activeFolder: activeFolder}
+            }).then(response => {
+                $('.spinner').css('display', 'none'); 
+                $('.content').css('display', 'block');
+                $('.mailsInFolder').html(response.data);            
+            });
         }
     });
 
@@ -102,6 +118,6 @@ $(document).ready(function(){
             $('.content').css('display', 'block');
             $('.mailsInFolder').html(response.data);
             setTimeout(function() {$('.alert').alert('close')}, 3000);      
-        });;    
+        });   
     })
 });
