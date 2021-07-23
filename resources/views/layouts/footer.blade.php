@@ -1,0 +1,1 @@
+<div class="text-center mt-auto">© Kate Tkachenko 2021</div>

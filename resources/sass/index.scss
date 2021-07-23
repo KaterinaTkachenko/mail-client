@@ -1,0 +1,80 @@
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#content {
+    width: calc(100% - 250px);
+    padding: 20px 40px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#content.active {
+    width: 100%;
+}
+#content{
+    display: flex;
+    flex-direction: column;
+}
+#content > div{
+    width: 100%;
+}
+.deleteItems{
+  display: none;
+}
+.sendMailBtn{
+  display: inline-block;
+}
+.mainBtn{
+    border: 1px solid grey;
+    padding: 10px 20px;
+    border-radius: 10px;    
+}
+.content__header{
+    display: flex;
+    justify-content: flex-end;
+}
+.spinner {
+    display: none;
+    width: 100vw;
+    height: 85vh;
+    justify-content: center;
+    align-items: center;
+    & div {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: #000;
+      animation: sk-bouncedelay 1.4s infinite;
+    }
+    & .bounce1 {
+      animation-delay: -0.32s;
+    }
+    & .bounce2 {
+      animation-delay: -0.16s;
+    }
+  }
+  
+  @keyframes sk-bouncedelay {
+    0% {
+      transform: scale(0);
+    }
+  
+    40% {
+      transform: scale(1);
+    }
+  
+    80% {
+      transform: scale(0);
+    }
+  
+    100% {
+      transform: scale(0);
+    }
+  }
+  
