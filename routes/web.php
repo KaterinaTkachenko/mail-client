@@ -18,6 +18,7 @@ Route::post('/sendmail', 'MainController@sendmail')->name('sendmail');
 Route::post('/changeFolder', 'MainController@changeFolder')->name('changeFolder');
 Route::post('/deleteMail', 'MainController@deleteMail')->name('deleteMail');
 Route::post('/showMail', 'MainController@showMail')->name('showMail');
+Route::post('/moveToArchive', 'MainController@moveToArchive')->name('moveToArchive');
 
 Route::get('/clear', function() {
 	Artisan::call('cache:clear');

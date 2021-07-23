@@ -10,11 +10,11 @@
                 <th>Email</th>
                 <th>Subject</th>
                 <th>Date</th>
+                <th>Archivate</th>
             </thead>          
             @foreach($inbox as $email)
                 <?php
-                    $overview = imap_fetch_overview($imap_conn, $email, 0); 
-                    //dd($email);                                                    
+                    $overview = imap_fetch_overview($imap_conn, $email, 0);  
                     $date = date("d F, Y", strtotime($overview[0]->date));
                 ?>
                 <tr>
@@ -23,14 +23,18 @@
                     </td>
                     <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
                         <?php 
-                            if ($folder == 'INBOX') echo $overview[0]->from;
-                            else echo 'Кому: '.$overview[0]->to; 
+                            //if ($folder == 'INBOX') echo $overview[0]->from;
+                            if ($folder == '[Gmail]/Отправленные') echo 'Кому: '.$overview[0]->to;
+                            else echo $overview[0]->from;; 
                         ?>
                     </td>
                     <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
-                        <?php if($overview[0]->subject) echo $overview[0]->subject; ?>
+                        <?php if(isset($overview[0]->subject)) echo $overview[0]->subject; ?>
                     </td>
                     <td class="openMail" data-msgno="{{$overview[0]->msgno}}"><?php echo $date; ?></td>
+                    <td>
+                        <input style="width: 40px; height: 20px;" class="archivate" name="archivate" type="checkbox" data-id={{$overview[0]->uid}} {{$overview[0]->flagged==1 ? 'checked' : ''}}>
+                    </td>
                 </tr>
             @endforeach
         </table>

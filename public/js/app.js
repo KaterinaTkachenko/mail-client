@@ -37511,6 +37511,30 @@ $(document).ready(function () {
         $('.mailsInFolder').html(response.data);
       });
     }
+
+    if (e.target.classList.contains("archivate")) {
+      $('.spinner').css('display', 'flex');
+      $('.content').css('display', 'none');
+
+      var _activeFolder = $('#sidebar li.active').children().attr('data-folder');
+
+      var _msgno = e.target.getAttribute('data-id');
+
+      var flag = e.target.checked;
+      axios({
+        method: "post",
+        url: "/moveToArchive",
+        data: {
+          msgno: _msgno,
+          activeFolder: _activeFolder,
+          flag: flag
+        }
+      }).then(function (response) {
+        $('.spinner').css('display', 'none');
+        $('.content').css('display', 'block');
+        $('.mailsInFolder').html(response.data);
+      });
+    }
   });
   $('.deleteItems').click(function (e) {
     e.preventDefault();

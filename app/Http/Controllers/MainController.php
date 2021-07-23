@@ -28,10 +28,10 @@ class MainController extends Controller
             $imap_conn = imap_open($this->server.'INBOX', $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error());
                 
             // SET filter criteria
-            $inbox = imap_search($imap_conn, 'ALL');
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');
 
             //get Gmail folders
-            $folders = imap_list($imap_conn, "{imap.gmail.com:993/imap/ssl}", "*"); 
+            $folders = imap_list($imap_conn, "{imap.gmail.com:993/imap/ssl}", "*");
             $folder = 'INBOX';  
             extract(get_object_vars($this));   
             return view('index', compact('imap_conn', 'login', 'server', 'inbox', 'folders', 'folder'));
@@ -40,34 +40,46 @@ class MainController extends Controller
 
     public function changeFolder(Request $request)
     {
-        Session::forget('success');
-        if($request->folder == 'sent')
-            $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';
-        if($request->folder == 'inbox')
+        Session::forget('success');        
+
+        if($request->folder == 'sent'){
+            $folder = '[Gmail]/Отправленные';
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');
+        }
+            
+        if($request->folder == 'inbox'){
             $folder = 'INBOX';
-
-        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
-        $inbox = imap_search($imap_conn, 'ALL');
-
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');
+        }
+            
+        if($request->folder == 'all'){
+            $folder = '[Gmail]/Вся почта';
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+            $inbox = imap_search($imap_conn, 'All');
+        }
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'folder'));      
     }
 
     public function deleteMail(Request $request)
     {
         if($request->activeFolder == 'sent'){
-            $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';           
+            $folder = '[Gmail]/Отправленные';           
         }            
         if($request->activeFolder == 'inbox'){
             $folder = 'INBOX';            
-        }   
+        }
+        if($request->activeFolder == 'all')
+            $folder = '[Gmail]/Вся почта';        
 
-        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass)
+        $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass)
             or die("Не удалось подключиться: " . imap_last_error());
         foreach($request->idList as $id){
             imap_delete($imap_conn, $id, FT_UID);
             imap_expunge($imap_conn);
         }                
-        $inbox = imap_search($imap_conn, 'ALL');        
+        $inbox = imap_search($imap_conn, 'UNFLAGGED');        
 
         if(count($request->idList)>1)
             Session::put('success', 'Письма удалены.');
@@ -77,12 +89,16 @@ class MainController extends Controller
     }
 
     public function showMail(Request $request){
-        if($request->activeFolder == 'sent')
-            $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';                   
-        if($request->activeFolder == 'inbox')
-            $folder = 'INBOX';
+        if($request->activeFolder == 'sent'){
+            $folder = '[Gmail]/Отправленные';           
+        }            
+        if($request->activeFolder == 'inbox'){
+            $folder = 'INBOX';            
+        }
+        if($request->activeFolder == 'all')
+            $folder = '[Gmail]/Вся почта';
 
-        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass)
+        $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass)
             or die("Не удалось подключиться: " . imap_last_error());
         
         $inbox = imap_fetch_overview($imap_conn, $request->msgno);
@@ -105,6 +121,49 @@ class MainController extends Controller
         }
         return view('mailBody', compact('message', 'inbox'));
     }
+
+    public function moveToArchive(Request $request)
+    {
+        Session::forget('success');
+        if($request->activeFolder == 'sent'){
+            $folder = '[Gmail]/Отправленные';
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error());            
+            if($request->flag){
+                imap_setflag_full($imap_conn, $request->msgno, "\\FLAGGED", ST_UID);              
+            }
+            else{
+                imap_setflag_full($imap_conn, $request->msgno, "\\UNFLAGGED", ST_UID);
+            } 
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');           
+        }
+            
+        if($request->activeFolder == 'inbox'){
+            $folder = 'INBOX';
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+            if($request->flag){
+                imap_setflag_full($imap_conn, $request->msgno, "\\FLAGGED", ST_UID);              
+            }
+            else{
+                imap_setflag_full($imap_conn, $request->msgno, "\\UNFLAGGED", ST_UID);
+            }
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');           
+        }
+            
+        if($request->activeFolder == 'all'){
+            $folder = '[Gmail]/Вся почта';
+            $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($folder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+            if($request->flag){
+                imap_setflag_full($imap_conn, $request->msgno, "\\FLAGGED", ST_UID);              
+            }
+            else{
+                imap_clearflag_full($imap_conn, $request->msgno, "\\FLAGGED", ST_UID);
+            }
+            $inbox = imap_search($imap_conn, 'ALL');
+        }        
+        
+        return view('mailsInFolder', compact('imap_conn', 'inbox', 'folder'));      
+    }
+
     public function sendmail(Request $request)
     {
         if($request->email){

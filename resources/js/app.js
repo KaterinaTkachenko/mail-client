@@ -94,6 +94,23 @@ $(document).ready(function(){
                 $('.mailsInFolder').html(response.data);            
             });
         }
+        if (e.target.classList.contains("archivate")){
+            $('.spinner').css('display', 'flex');
+            $('.content').css('display', 'none');
+            
+            let activeFolder = $('#sidebar li.active').children().attr('data-folder');
+            let msgno = e.target.getAttribute('data-id');
+            let flag = e.target.checked;
+            axios({
+                method: "post",
+                url: "/moveToArchive",
+                data: {msgno: msgno, activeFolder: activeFolder, flag: flag}
+            }).then(response => {
+                $('.spinner').css('display', 'none'); 
+                $('.content').css('display', 'block');
+                $('.mailsInFolder').html(response.data);            
+            });
+        }
     });
 
     $('.deleteItems').click(function(e){
