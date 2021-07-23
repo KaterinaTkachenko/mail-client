@@ -4,8 +4,7 @@
 	<div class="wrapper">
 		@include('layouts.sidebar')
 		<div id="content">
-			@include('layouts.header')
-				@include('layouts.messages')
+			@include('layouts.header')				
 				@yield('main')
 			@include('layouts.footer')
 		</div>

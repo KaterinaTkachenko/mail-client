@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Session;
 
 class MainController extends Controller
 {
@@ -38,7 +39,8 @@ class MainController extends Controller
     }    
 
     public function changeFolder(Request $request)
-    {        
+    {
+        Session::forget('success');
         //Connect to Folder        
         if($request->folder == 'sent')
             $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';
@@ -54,15 +56,27 @@ class MainController extends Controller
 
     public function deleteMail(Request $request)
     {
-        $imap_conn = imap_open($this->server.'INBOX', $this->login, $this->pass)
-            or die("Не удалось подключиться: " . imap_last_error());
+        if($request->activeFolder == 'sent'){
+            $folder = '[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-';           
+        }            
+        if($request->activeFolder == 'inbox'){
+            $folder = 'INBOX';            
+        }   
 
-        imap_delete($imap_conn, $request->id, FT_UID);
-        imap_expunge($imap_conn);
+        $imap_conn = imap_open($this->server.$folder, $this->login, $this->pass)
+            or die("Не удалось подключиться: " . imap_last_error());            
         
-        // SET filter criteria
-        $inbox = imap_search($imap_conn, 'ALL');
-        $folder = 'INBOX';
+        foreach($request->idList as $id){
+            imap_delete($imap_conn, $id, FT_UID);
+            imap_expunge($imap_conn);
+        }
+                
+        $inbox = imap_search($imap_conn, 'ALL');        
+
+        if(count($request->idList)>1)
+            Session::put('success', 'Письма удалены.');
+        else
+            Session::put('success', 'Письмо удалено.');
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'folder'));
     }
 
@@ -74,8 +88,8 @@ class MainController extends Controller
                 "subject" =>  $request->subject,
                 "body"   => $request->mBody
             );
-            event(new \App\Events\SendMailEvent($data));
-            return redirect('/')->with('success', 'Письмо отправлено успешно');
+            event(new \App\Events\SendMailEvent($data)); 
+            return redirect('/')->with('success', 'Письмо отправлено.');
         }
         else{            
             return redirect('/')->withErrors('email', 'Введите, пожалуйста, email получателя');

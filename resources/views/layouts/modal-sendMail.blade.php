@@ -12,7 +12,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="email">Получатель</label>
-                        <input class="form-control" id="email" name="email" type="email">
+                        <input class="form-control" id="email" name="email" type="email" autofocus >
                         <div class="invalid-feedback email">
                             Обязательное поле
                         </div>                        
@@ -25,7 +25,8 @@
                     <div class="form-group">
                         <label for="mBody">Текст письма</label>
                         <textarea class="form-control" rows="5" name="mBody" cols="50"></textarea>
-                    </div>	
+                    </div>
+                    <input type="hidden" name="activeFolder" value="inbox">
                     <button class="btn btn-dark">Отправить</button>	
                 </form>
             </div>

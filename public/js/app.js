@@ -37439,7 +37439,12 @@ if (email) {
 }
 
 $(document).ready(function () {
+  $('#modalSendMail').on('shown.bs.modal', function () {
+    $('#email').trigger('focus');
+  });
   $('.js_folder').click(function () {
+    $('#sidebar li.active').not($(this)).removeClass('active');
+    $(this).parent().addClass('active');
     var folder = $(this).attr('data-folder');
     $('.spinner').css('display', 'flex');
     $('.content').css('display', 'none');
@@ -37450,16 +37455,17 @@ $(document).ready(function () {
         folder: folder
       }
     }).then(function (response) {
+      $("input[name='activeFolder']").val(folder);
       $('.spinner').css('display', 'none');
       $('.content__header').css('justify-content', 'flex-end');
       $('.deleteItems').css('display', 'none');
       $('.content').css('display', 'block');
       $('.table').html(response.data);
+      setTimeout(function () {
+        $('.alert').alert('close');
+      }, 3000);
     });
   });
-  setTimeout(function () {
-    $('.alert').alert('close');
-  }, 5000);
   $('.content__main').click(function (e) {
     if (e.target.classList.contains("checkit")) {
       var checkboxes = document.querySelectorAll('.checkit');
@@ -37489,21 +37495,42 @@ $(document).ready(function () {
   });
   $('.deleteItems').click(function (e) {
     e.preventDefault();
-    var mailToDelete = $('.checkit:checked').attr('data-id');
+    var activeFolder = $('#sidebar li.active').children().attr('data-folder');
+    var mailsToDelete = document.querySelectorAll('.checkit:checked');
+    var idList = [];
+
+    var _iterator2 = _createForOfIteratorHelper(mailsToDelete),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var id = _step2.value;
+        idList.push(id.getAttribute('data-id'));
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+
     $('.spinner').css('display', 'flex');
     $('.content').css('display', 'none');
     axios({
       method: "post",
       url: "/deleteMail",
       data: {
-        id: mailToDelete
+        idList: idList,
+        activeFolder: activeFolder
       }
     }).then(function (response) {
       $('.spinner').css('display', 'none');
       $('.content__header').css('justify-content', 'flex-end');
       $('.deleteItems').css('display', 'none');
       $('.content').css('display', 'block');
-      $('.table').html(response.data);
+      $('.mailsInFolder').html(response.data);
+      setTimeout(function () {
+        $('.alert').alert('close');
+      }, 3000);
     });
     ;
   });

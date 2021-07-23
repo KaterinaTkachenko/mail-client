@@ -37,8 +37,13 @@ if(email){
     });
 }
 
-$(document).ready(function(){
+$(document).ready(function(){ 
+    $('#modalSendMail').on('shown.bs.modal', function () {
+        $('#email').trigger('focus');
+      }) 
     $('.js_folder').click(function(){
+        $('#sidebar li.active').not($(this)).removeClass('active');
+        $(this).parent().addClass('active');
         let folder = $(this).attr('data-folder');
         $('.spinner').css('display', 'flex');
         $('.content').css('display', 'none');
@@ -47,14 +52,15 @@ $(document).ready(function(){
             url: "/changeFolder",
             data: {folder: folder}
         }).then(response => {
+            $("input[name='activeFolder']").val(folder);
             $('.spinner').css('display', 'none'); 
             $('.content__header').css('justify-content', 'flex-end')
             $('.deleteItems').css('display', 'none');           
             $('.content').css('display', 'block');
-            $('.table').html(response.data)
+            $('.table').html(response.data);
+            setTimeout(function() {$('.alert').alert('close')}, 3000);
         });
-    });
-    setTimeout(function() {$('.alert').alert('close')}, 5000);   
+    });   
     
     $('.content__main').click(function(e){
         if (e.target.classList.contains("checkit")){
@@ -76,20 +82,26 @@ $(document).ready(function(){
 
     $('.deleteItems').click(function(e){
         e.preventDefault();
-        let mailToDelete = $('.checkit:checked').attr('data-id');
+        let activeFolder = $('#sidebar li.active').children().attr('data-folder');
+        let mailsToDelete = document.querySelectorAll('.checkit:checked');
+        let idList = [];
+        for(let id of mailsToDelete){
+            idList.push(id.getAttribute('data-id'));
+        }
 
         $('.spinner').css('display', 'flex');
         $('.content').css('display', 'none');
         axios({
             method: "post",
             url: "/deleteMail",
-            data: {id: mailToDelete}
+            data: {idList: idList, activeFolder: activeFolder}
         }).then(response => {
             $('.spinner').css('display', 'none'); 
             $('.content__header').css('justify-content', 'flex-end')
             $('.deleteItems').css('display', 'none');           
             $('.content').css('display', 'block');
-            $('.table').html(response.data);        
+            $('.mailsInFolder').html(response.data);
+            setTimeout(function() {$('.alert').alert('close')}, 3000);      
         });;    
     })
 });
