@@ -86,8 +86,7 @@ class MainController extends Controller
             or die("Не удалось подключиться: " . imap_last_error());
         
         $inbox = imap_fetch_overview($imap_conn, $request->msgno);
-        $html = imap_qprint(imap_body($imap_conn, $request->msgno, 2));
-
+        
         $structure = imap_fetchstructure($imap_conn, $request->msgno);
         if(isset($structure->parts) && is_array($structure->parts) && isset($structure->parts[1])) {
             $part = $structure->parts[1];
