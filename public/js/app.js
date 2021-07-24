@@ -37398,7 +37398,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["default"];
+var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["default"]; //Email Validation
+
 
 (function () {
   'use strict';
@@ -37419,8 +37420,7 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
       }, false);
     });
   }, false);
-})(); //Email Validation
-
+})();
 
 var email = document.querySelector('#email');
 
@@ -37445,17 +37445,17 @@ $(document).ready(function () {
   $('.js_folder').click(function () {
     $('#sidebar li.active').not($(this)).removeClass('active');
     $(this).parent().addClass('active');
-    var folder = $(this).attr('data-folder');
+    var activeFolder = $(this).attr('data-folder');
     $('.spinner').css('display', 'flex');
     $('.content').css('display', 'none');
     axios({
       method: "post",
       url: "/changeFolder",
       data: {
-        folder: folder
+        activeFolder: activeFolder
       }
     }).then(function (response) {
-      $("input[name='activeFolder']").val(folder);
+      $("input[name='activeFolder']").val(activeFolder);
       $('.spinner').css('display', 'none');
       $('.content__header').css('justify-content', 'flex-end');
       $('.deleteItems').css('display', 'none');

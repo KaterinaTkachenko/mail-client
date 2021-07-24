@@ -11025,7 +11025,8 @@ textarea {
 }
 
 #sidebar ul li {
-  padding: 10px;
+  padding: 5px 10px;
+  margin: 10px 0;
 }
 
 #sidebar ul li a {

@@ -1,6 +1,7 @@
 require("./bootstrap");
 const axios = require("axios").default;
 
+//Email Validation
 (function() {
     'use strict';
     window.addEventListener('load', function() {
@@ -21,7 +22,6 @@ const axios = require("axios").default;
     }, false);
 })();
 
-//Email Validation
 let email = document.querySelector('#email');
 if(email){
     email.addEventListener('change', function(){
@@ -40,19 +40,20 @@ if(email){
 $(document).ready(function(){ 
     $('#modalSendMail').on('shown.bs.modal', function () {
         $('#email').trigger('focus');
-      }) 
+      });
+
     $('.js_folder').click(function(){
         $('#sidebar li.active').not($(this)).removeClass('active');
         $(this).parent().addClass('active');
-        let folder = $(this).attr('data-folder');
+        let activeFolder = $(this).attr('data-folder');
         $('.spinner').css('display', 'flex');
         $('.content').css('display', 'none');
         axios({
             method: "post",
             url: "/changeFolder",
-            data: {folder: folder}
+            data: {activeFolder: activeFolder}
         }).then(response => {
-            $("input[name='activeFolder']").val(folder);
+            $("input[name='activeFolder']").val(activeFolder);
             $('.spinner').css('display', 'none'); 
             $('.content__header').css('justify-content', 'flex-end')
             $('.deleteItems').css('display', 'none');           

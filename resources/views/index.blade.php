@@ -16,8 +16,7 @@
             @if (! empty($inbox))
                 @include('mailsInFolder')
                 @include('mailBody')
-            @endif
-            <?php imap_close($imap_conn);?>
+            @endif            
         </div>
     </div>
 @endsection
