@@ -32,7 +32,7 @@ if(email){
       }
     });
 }    
-if (window.outerWidth < 768 || window.innerWidth ) {
+if (window.outerWidth < 768 || window.innerWidth < 768) {
     $('.sidebar').removeClass('show');
     $('.main').removeClass('show');
     $('.collapse').removeClass('show');

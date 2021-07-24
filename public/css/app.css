@@ -11172,9 +11172,13 @@ textarea {
   padding: 10px 20px;
 }
 
+.searchBtn {
+  width: 15%;
+}
+
 .searchL {
   position: relative;
-  width: 100%;
+  width: 85%;
   border-radius: 10px;
   border: 1px solid grey;
   padding: 0px 35px;
@@ -11206,6 +11210,10 @@ textarea {
   .searchBtn {
     width: 100%;
     margin-top: 10px;
+  }
+
+  .searchL {
+    width: 100%;
   }
 }
 
