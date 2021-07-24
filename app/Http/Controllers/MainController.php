@@ -106,6 +106,18 @@ class MainController extends Controller
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'activeFolder'));      
     }
 
+    public function search(Request $request){
+        $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($request->activeFolder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
+        //$str = 'FROM "'.$request->creteria.'" TO "'.$request->creteria.'" ON "'.$request->creteria.'"';
+        //dd($str);
+        $str = "FROM \"$request->creteria\"";
+        $inbox = imap_search($imap_conn, $str);
+        
+        //.'" FROM "'.$request->creteria
+        $activeFolder = $request->activeFolder; 
+        return view('mailsInFolder', compact('imap_conn', 'inbox', 'activeFolder'));
+    }
+
     public function sendmail(Request $request)
     {
         if($request->email){

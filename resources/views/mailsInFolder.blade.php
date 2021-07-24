@@ -1,8 +1,15 @@
 <div class="mailsInFolder">
     @include('layouts.messages')
     @if (! empty($inbox))
-        <div>
-            <label class="searchL"><input type="text" name="search" class="search"></label>
+        <div class="d-flex searchPanel">
+            <div>
+                <label class="searchL"><input type="text" placeholder="in:to" name="search" id="search" class="search"></label>
+                <button id="searchBtn" class="searchBtn mainBtn">Найти</button>
+            </div>
+            <div>
+                <label class="searchL"><input type="text" placeholder="in:date" name="search" id="search" class="search"></label>
+                <button id="searchBtn" class="searchBtn mainBtn">Найти</button>
+            </div>
         </div>
         <table class="table table-striped">  
             <thead>
@@ -11,10 +18,11 @@
                 <th>Subject</th>
                 <th>Date</th>
                 <th>Archivate</th>
-            </thead>          
+            </thead>                       
             @foreach($inbox as $email)
                 <?php
-                    $overview = imap_fetch_overview($imap_conn, $email, 0);                    
+                    $overview = imap_fetch_overview($imap_conn, $email, 0);  
+                    //dd($overview)                  ;
                     $date = date("d F, Y", strtotime($overview[0]->date));
                 ?>
                 <tr>

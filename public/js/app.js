@@ -37535,6 +37535,27 @@ $(document).ready(function () {
         $('.mailsInFolder').html(response.data);
       });
     }
+
+    if (e.target.classList.contains('searchBtn')) {
+      $('.spinner').css('display', 'flex');
+      $('.content').css('display', 'none');
+
+      var _activeFolder2 = $('#sidebar li.active').children().attr('data-folder');
+
+      var creteria = $('#search').val();
+      axios({
+        method: "post",
+        url: "/search",
+        data: {
+          activeFolder: _activeFolder2,
+          creteria: creteria
+        }
+      }).then(function (response) {
+        $('.spinner').css('display', 'none');
+        $('.content').css('display', 'block');
+        $('.mailsInFolder').html(response.data);
+      });
+    }
   });
   $('.deleteItems').click(function (e) {
     e.preventDefault();

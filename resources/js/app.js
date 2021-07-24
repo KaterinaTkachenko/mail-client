@@ -112,6 +112,22 @@ $(document).ready(function(){
                 $('.mailsInFolder').html(response.data);            
             });
         }
+        if(e.target.classList.contains('searchBtn')){
+                $('.spinner').css('display', 'flex');
+                $('.content').css('display', 'none');
+                    
+                let activeFolder = $('#sidebar li.active').children().attr('data-folder');
+                let creteria = $('#search').val();
+                axios({
+                    method: "post",
+                    url: "/search",
+                    data: {activeFolder: activeFolder, creteria: creteria}
+                }).then(response => {
+                    $('.spinner').css('display', 'none'); 
+                    $('.content').css('display', 'block');
+                    $('.mailsInFolder').html(response.data);            
+                });
+        }
     });
 
     $('.deleteItems').click(function(e){
@@ -137,5 +153,5 @@ $(document).ready(function(){
             $('.mailsInFolder').html(response.data);
             setTimeout(function() {$('.alert').alert('close')}, 3000);      
         });   
-    })
+    });
 });
