@@ -33,7 +33,7 @@ class MainController extends Controller
             //get Gmail folders
             $folders = imap_list($imap_conn, "{imap.gmail.com:993/imap/ssl}", "*");
             $activeFolder = 'INBOX';  
-            extract(get_object_vars($this));   
+            extract(get_object_vars($this));
             return view('index', compact('imap_conn', 'login', 'server', 'inbox', 'folders', 'activeFolder'));
         }        
     }    
@@ -78,13 +78,17 @@ class MainController extends Controller
             $part = $structure->parts[1];
             $message = imap_fetchbody($imap_conn,$request->msgno,2);
 
-            if($part->encoding == 3) {
-                $message = imap_base64($message);
-            } else if($part->encoding == 1) {
-                $message = imap_8bit($message);
-            } else {
-                $message = imap_qprint($message);
-            }            
+            switch ($part->encoding) {
+                case 3:
+                    $message = imap_base64($message);
+                    break;
+                case 1:
+                    $message = imap_8bit($message);
+                    break;
+                default:
+                    $message = imap_qprint($message);
+                    break;
+            }          
         }
         else{
             $message = imap_qprint(imap_body($imap_conn, $request->msgno, 2));
@@ -107,25 +111,27 @@ class MainController extends Controller
     }
 
     public function search(Request $request){
+        Session::forget('success');
         $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($request->activeFolder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error());
-
+        
+        $str = '';
         if($request->creteria == 'to')
             $str = "TO \"$request->searchStr\"";
-        else if ($request->creteria == 'from')
+        if($request->creteria == 'from')
             $str = "FROM \"$request->searchStr\"";
 
         $request->activeFolder == '[Gmail]/Вся почта' ?
             $inbox = imap_search($imap_conn, 'ALL '.$str) :
             $inbox = imap_search($imap_conn, 'UNFLAGGED '.$str);
-        
         if(!$inbox){
             $request->activeFolder == '[Gmail]/Вся почта' ?
             $inbox = imap_search($imap_conn, 'ALL') :
             $inbox = imap_search($imap_conn, 'UNFLAGGED');
             Session::put('success', 'Письма по заданному критерию не найдены');
         }
-        $activeFolder = $request->activeFolder;        
-        return view('mailsInFolder', compact('imap_conn', 'inbox', 'activeFolder'));
+        $activeFolder = $request->activeFolder;
+        $searchStr =  $request->searchStr;     
+        return view('mailsInFolder', compact('imap_conn', 'inbox', 'activeFolder', 'searchStr'));
     }
 
     public function sendmail(Request $request)
@@ -137,7 +143,7 @@ class MainController extends Controller
                 "body"   => $request->mBody
             );
             event(new \App\Events\SendMailEvent($data)); 
-            return redirect('/')->with('success', 'Письмо отправлено.');////////////////
+            return redirect('/')->with('success', 'Письмо отправлено.');
         }
         else{            
             return redirect('/')->withErrors('email', 'Введите, пожалуйста, email получателя');

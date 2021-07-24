@@ -11013,7 +11013,6 @@ textarea {
 }
 
 #sidebar {
-  width: 250px;
   position: fixed;
   top: 0;
   left: 0;
@@ -11040,13 +11039,28 @@ textarea {
   margin-right: 15px;
 }
 
+.sidebar {
+  width: 90px;
+}
+
+.sidebar.show {
+  width: 250px;
+}
+
+.main {
+  width: calc(100% - 90px);
+}
+
+.main.show {
+  width: calc(100% - 250px);
+}
+
 .wrapper {
   display: flex;
   width: 100%;
 }
 
 #content {
-  width: calc(100% - 250px);
   padding: 20px 40px;
   min-height: 100vh;
   transition: all 0.3s;
@@ -11084,6 +11098,7 @@ textarea {
 
 .content__header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
 }
 
@@ -11180,5 +11195,17 @@ textarea {
 .checkit,
 .openMail {
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .content__header > a {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .searchBtn {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
 

@@ -1,9 +1,9 @@
 <div class="mailsInFolder">
     @include('layouts.messages')
     @if (! empty($inbox))
-        <div class="d-flex">
-            <label class="searchL"><input type="text" placeholder="{{$activeFolder=='INBOX' ? 'in:from' : 'in:to'}}" name="search" class="search"></label>
-            <button class="searchBtn mainBtn" data-creteria="{{$activeFolder=='INBOX' ? 'from' : 'to'}}">Найти</button>
+        <div class="d-flex flex-wrap">
+            <label class="searchL"><input type="text" id="search" placeholder="{{$activeFolder=='[Gmail]/Отправленные' ? 'in:to' : 'in:from'}}" name="search" class="search" value="{{isset($searchStr) ? $searchStr : ''}}"></label>
+            <button class="searchBtn mainBtn" data-creteria="{{$activeFolder=='[Gmail]/Отправленные' ? 'to' : 'from'}}">Найти</button>
         </div>
         <table class="table table-striped">  
             <thead>
@@ -26,15 +26,18 @@
                         </td>
                     @endif
                     <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
-                        <?php 
-                            if ($activeFolder == '[Gmail]/Отправленные') echo 'Кому: '.$overview[0]->to;
-                            else echo $overview[0]->from;; 
-                        ?>
+                        @if($activeFolder == '[Gmail]/Отправленные')
+                            Кому: {{$overview[0]->to}}
+                        @else
+                            {{ $overview[0]->from }}
+                        @endif
                     </td>
                     <td class="openMail" data-msgno="{{$overview[0]->msgno}}">
-                        <?php if(isset($overview[0]->subject)) echo $overview[0]->subject; ?>
+                        @if(isset($overview[0]->subject))
+                            {{$overview[0]->subject}}
+                        @endif                        
                     </td>
-                    <td class="openMail" data-msgno="{{$overview[0]->msgno}}"><?php echo $date; ?></td>
+                    <td class="openMail" data-msgno="{{$overview[0]->msgno}}">{{$date}}</td>
                     <td>
                         <input style="width: 40px; height: 20px;" class="archivate" name="archivate" type="checkbox" data-id={{$overview[0]->uid}} {{$overview[0]->flagged ? 'checked' : ''}}>
                     </td>

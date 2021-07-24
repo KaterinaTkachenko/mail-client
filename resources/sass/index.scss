@@ -4,7 +4,6 @@
 }
 
 #content {
-    width: calc(100% - 250px);
     padding: 20px 40px;
     min-height: 100vh;
     transition: all 0.3s;
@@ -36,6 +35,7 @@
 }
 .content__header{
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
 }
 .spinner {
@@ -103,4 +103,14 @@
   }
   .checkit, .openMail{
     cursor: pointer;
+  }
+  @media (max-width: 768px) {  
+    .content__header > a{
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .searchBtn{
+      width: 100%;
+      margin-top: 10px;
+    }
   }

@@ -37405,9 +37405,7 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
   'use strict';
 
   window.addEventListener('load', function () {
-    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-    var forms = document.getElementsByClassName('needs-validation'); // Loop over them and prevent submission
-
+    var forms = document.getElementsByClassName('needs-validation');
     var validation = Array.prototype.filter.call(forms, function (form) {
       form.addEventListener('submit', function (event) {
         // if (form.checkValidity() === false) {
@@ -37415,8 +37413,7 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js")["d
           event.preventDefault();
           event.stopPropagation();
           $(this).children().children('#email').addClass('is-invalid');
-        } //form.classList.add('was-validated');
-
+        }
       }, false);
     });
   }, false);
@@ -37438,6 +37435,12 @@ if (email) {
   });
 }
 
+if (window.outerWidth < 768 || window.innerWidth) {
+  $('.sidebar').removeClass('show');
+  $('.main').removeClass('show');
+  $('.collapse').removeClass('show');
+}
+
 $(document).ready(function () {
   $('#modalSendMail').on('shown.bs.modal', function () {
     $('#email').trigger('focus');
@@ -37445,6 +37448,10 @@ $(document).ready(function () {
   setTimeout(function () {
     $('.alert').alert('close');
   }, 3000);
+  $('.navbar-toggler').click(function () {
+    $('#sidebar').toggleClass('show');
+    $('#content').toggleClass('show');
+  });
   $('.js_folder').click(function () {
     $('#sidebar li.active').not($(this)).removeClass('active');
     $(this).parent().addClass('active');
@@ -37468,6 +37475,13 @@ $(document).ready(function () {
         $('.alert').alert('close');
       }, 3000);
     });
+  });
+  $('.content__main').keypress(function (e) {
+    if (e.target.classList.contains("search")) {
+      if (event.keyCode === 13) {
+        $(".searchBtn").click();
+      }
+    }
   });
   $('.content__main').click(function (e) {
     if (e.target.classList.contains("checkit")) {
