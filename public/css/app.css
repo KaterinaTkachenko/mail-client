@@ -11151,10 +11151,6 @@ textarea {
   }
 }
 
-.searchPanel > div {
-  width: 50%;
-}
-
 .search {
   border: none;
   width: 100%;
@@ -11163,7 +11159,7 @@ textarea {
 
 .searchL {
   position: relative;
-  width: 80%;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid grey;
   padding: 0px 35px;

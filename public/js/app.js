@@ -37442,6 +37442,9 @@ $(document).ready(function () {
   $('#modalSendMail').on('shown.bs.modal', function () {
     $('#email').trigger('focus');
   });
+  setTimeout(function () {
+    $('.alert').alert('close');
+  }, 3000);
   $('.js_folder').click(function () {
     $('#sidebar li.active').not($(this)).removeClass('active');
     $(this).parent().addClass('active');
@@ -37542,18 +37545,23 @@ $(document).ready(function () {
 
       var _activeFolder2 = $('#sidebar li.active').children().attr('data-folder');
 
-      var creteria = $('#search').val();
+      var creteria = e.target.getAttribute('data-creteria');
+      var searchStr = e.target.parentNode.childNodes[1].childNodes[0].value;
       axios({
         method: "post",
         url: "/search",
         data: {
           activeFolder: _activeFolder2,
-          creteria: creteria
+          creteria: creteria,
+          searchStr: searchStr
         }
       }).then(function (response) {
         $('.spinner').css('display', 'none');
         $('.content').css('display', 'block');
         $('.mailsInFolder').html(response.data);
+        setTimeout(function () {
+          $('.alert').alert('close');
+        }, 3000);
       });
     }
   });

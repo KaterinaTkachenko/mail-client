@@ -1,15 +1,9 @@
 <div class="mailsInFolder">
     @include('layouts.messages')
     @if (! empty($inbox))
-        <div class="d-flex searchPanel">
-            <div>
-                <label class="searchL"><input type="text" placeholder="in:to" name="search" id="search" class="search"></label>
-                <button id="searchBtn" class="searchBtn mainBtn">Найти</button>
-            </div>
-            <div>
-                <label class="searchL"><input type="text" placeholder="in:date" name="search" id="search" class="search"></label>
-                <button id="searchBtn" class="searchBtn mainBtn">Найти</button>
-            </div>
+        <div class="d-flex">
+            <label class="searchL"><input type="text" placeholder="{{$activeFolder=='INBOX' ? 'in:from' : 'in:to'}}" name="search" class="search"></label>
+            <button class="searchBtn mainBtn" data-creteria="{{$activeFolder=='INBOX' ? 'from' : 'to'}}">Найти</button>
         </div>
         <table class="table table-striped">  
             <thead>

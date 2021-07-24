@@ -18,7 +18,7 @@ class MainController extends Controller
         $this->server = '{imap.gmail.com:993/imap/ssl}';
     }
     public function index()
-    {
+    {        
         if (! function_exists('imap_open')) {
             echo "Error: IMAP is not configured.";
             exit();
@@ -107,14 +107,24 @@ class MainController extends Controller
     }
 
     public function search(Request $request){
-        $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($request->activeFolder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error()); 
-        //$str = 'FROM "'.$request->creteria.'" TO "'.$request->creteria.'" ON "'.$request->creteria.'"';
-        //dd($str);
-        $str = "FROM \"$request->creteria\"";
-        $inbox = imap_search($imap_conn, $str);
+        $imap_conn = imap_open($this->server.imap_utf8_to_mutf7($request->activeFolder), $this->login, $this->pass) or die('Cannot connect to Gmail: ' . imap_last_error());
+
+        if($request->creteria == 'to')
+            $str = "TO \"$request->searchStr\"";
+        else if ($request->creteria == 'from')
+            $str = "FROM \"$request->searchStr\"";
+
+        $request->activeFolder == '[Gmail]/Вся почта' ?
+            $inbox = imap_search($imap_conn, 'ALL '.$str) :
+            $inbox = imap_search($imap_conn, 'UNFLAGGED '.$str);
         
-        //.'" FROM "'.$request->creteria
-        $activeFolder = $request->activeFolder; 
+        if(!$inbox){
+            $request->activeFolder == '[Gmail]/Вся почта' ?
+            $inbox = imap_search($imap_conn, 'ALL') :
+            $inbox = imap_search($imap_conn, 'UNFLAGGED');
+            Session::put('success', 'Письма по заданному критерию не найдены');
+        }
+        $activeFolder = $request->activeFolder;        
         return view('mailsInFolder', compact('imap_conn', 'inbox', 'activeFolder'));
     }
 
@@ -127,7 +137,7 @@ class MainController extends Controller
                 "body"   => $request->mBody
             );
             event(new \App\Events\SendMailEvent($data)); 
-            return redirect('/')->with('success', 'Письмо отправлено.');
+            return redirect('/')->with('success', 'Письмо отправлено.');////////////////
         }
         else{            
             return redirect('/')->withErrors('email', 'Введите, пожалуйста, email получателя');
